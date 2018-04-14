@@ -75,37 +75,36 @@ provider "aws" {
 module "dynamic-iamgroup" {
   source = "riboseinc/iam-authenticating-group/aws"
 
-  name            = "example-terraform-aws-iam-authenticating-group"
-
-  # Description of this IAM group
-  description     = "example usage of terraform-aws-iam-authenticating-group"
-
-  //  # Time to expiry for every membership.
-  time_to_expire  = 600
-
-  providers = {
-
-  }
-  groups = [
+  name           = "example-dynamic-iam-groups"
+  description    = "example usage of terraform-aws-authenticating-iam"
+  
+  #in seconds
+  time_to_expire = 300
+  
+  # cloudwatch log level "INFO" or "DEBUG"
+  log_level = "DEBUG" 
+  
+  iam_groups     = [
     {
-      "group_names"   = [
-        "group1",
-        "group2"
-      ],
-      "region_name" = "us-west-1"
+      "group_name" = "group_name_1",
+      "user_names" = [
+        "user_name_1",
+        "user_name_2"
+      ]
     },
     {
-      "group_names"   = [
-        "group3"
-      ],
-      "region_name" = "us-west-2"
+      "group_name" = "group_name_2",
+      "user_names" = [
+        "user_name_1",
+        "user_name_2"
+      ]
     }
   ]
 }
 
 /* policy */
 resource "aws_iam_policy" "this" {
-  description = "Policy Developer SSH Access"
+  description = "Policy Developer IAM Access"
   policy      = "${data.aws_iam_policy_document.access_policy_doc.json}"
 }
 
