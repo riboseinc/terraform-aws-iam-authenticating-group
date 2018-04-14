@@ -50,13 +50,13 @@ out the IAM group that has stale membership.
 
 Steps:
 
-    1. The function will describe all rules in the given security group.
+    1. The function will describe all rules in the given iam group.
 
     2. For every rule, it will check the description for the time of last update.
         -   If the elapsed time is less than the configured X seconds, don't do anything.
         -   If the elapsed time is more than the configured X seconds, it means that the
-            rule has expired, and it should execute `revoke-security-group-ingress` on it.
-            (e.g., if all rules are expired, the security group should now contain no rules)
+            rule has expired, and it should execute `revoke-iam-group` on it.
+            (e.g., if all rules are expired, the iam group should now contain no rules)
 
     3. Done.
 
@@ -65,24 +65,32 @@ Steps:
 
 Check out [examples](https://github.com/riboseinc/terraform-aws-iam-authenticating-group/tree/master/examples) for more details
 
-```terraform
-/* where should this API deployed to, more info https://www.terraform.io/docs/providers/aws */
+
+#### Provider Config
+
+- Where should this API deployed to, more info [aws](https://www.terraform.io/docs/providers/aws)
+
+```hcl-terraform
 provider "aws" {
   region  = "us-west-2"
 }
+```
 
-/* main configuration */
+
+#### Inline Config
+
+```hcl-terraform
 module "dynamic-iamgroup" {
   source = "riboseinc/iam-authenticating-group/aws"
 
   name           = "example-dynamic-iam-groups"
   description    = "example usage of terraform-aws-authenticating-iam"
   
-  #in seconds
+  # in seconds
   time_to_expire = 300
   
-  # cloudwatch log level "INFO" or "DEBUG"
-  log_level = "DEBUG" 
+  # cloudwatch log level "INFO" or "DEBUG", default is "INFO"
+  log_level = "INFO" 
   
   iam_groups     = [
     {
@@ -101,8 +109,23 @@ module "dynamic-iamgroup" {
     }
   ]
 }
+```
 
-/* policy */
+#### Json file Config
+```hcl-terraform
+module "dynamic-iam-group" {
+  source         = "../../"
+  name           = "example-dynamic-iam-groups"
+  description    = "example usage of terraform-aws-authenticating-iam"
+  time_to_expire = 300
+  log_level = "INFO"
+  iam_groups     = ["${file("iam_groups.json")}"]
+}
+```
+
+#### Policy Config
+
+```hcl-terraform
 resource "aws_iam_policy" "this" {
   description = "Policy Developer IAM Access"
   policy      = "${data.aws_iam_policy_document.access_policy_doc.json}"
@@ -118,14 +141,15 @@ data "aws_iam_policy_document" "access_policy_doc" {
       "${module.dynamic-iamgroup.execution_resources}"]
   }
 }
+```
 
-/** Some outputs */
 
+#### Some outputs
+```hcl-terraform
 output "dynamic-iamgroup-api-invoke-url" {
   value = "${module.dynamic-iamgroup.invoke_url}"
 }
 ```
-
 
 ### Bash to execute the API
 
