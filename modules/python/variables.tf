@@ -1,5 +1,4 @@
 variable "log_level" {
-  default = "INFO"
 }
 
 variable "iam_groups" {
