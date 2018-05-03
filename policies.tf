@@ -33,5 +33,5 @@ module "sts_gateway" {
     "logs:GetLogEvents",
     "logs:FilterLogEvents"
   ]
-  description = "used by Api Gateway to write log (cloudwatch)"
+  description = "used by API Gateway to write log (CloudWatch)"
 }

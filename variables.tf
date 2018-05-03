@@ -1,5 +1,5 @@
 variable "description" {
-  description = "Description of this api"
+  description = "Description of this API"
   default     = "Dynamically Managing IAM Groups API"
 }
 
