@@ -8,7 +8,7 @@ output "execution_resources" {
     "${module.gateway_authorize.execution_resource}",
     "${module.gateway_revoke.execution_resource}"
   ]
-  description = "Excution resouces ARN"
+  description = "Execution resouces ARN"
 }
 
 output "lambda_names" {
