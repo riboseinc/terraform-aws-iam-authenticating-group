@@ -50,13 +50,13 @@ out the IAM group that has stale membership.
 
 Steps:
 
-    1. The function will describe all rules in the given iam group.
+    1. The function will describe all rules in the given IAM group.
 
     2. For every rule, it will check the description for the time of last update.
         -   If the elapsed time is less than the configured X seconds, don't do anything.
         -   If the elapsed time is more than the configured X seconds, it means that the
             rule has expired, and it should execute `revoke-iam-group` on it.
-            (e.g., if all rules are expired, the iam group should now contain no rules)
+            (e.g., if all rules are expired, the IAM group should now contain no rules)
 
     3. Done.
 
@@ -89,7 +89,7 @@ module "dynamic-iamgroup" {
   # in seconds
   time_to_expire = 300
   
-  # cloudwatch log level "INFO" or "DEBUG", default is "INFO"
+  # CloudWatch log level "INFO" or "DEBUG", default is "INFO"
   log_level = "INFO" 
   
   iam_groups     = [
@@ -111,7 +111,7 @@ module "dynamic-iamgroup" {
 }
 ```
 
-#### Json file Config
+#### JSON file Config
 ```hcl-terraform
 module "dynamic-iam-group" {
   source         = "../../"
