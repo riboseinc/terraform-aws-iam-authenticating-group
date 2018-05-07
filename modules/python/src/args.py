@@ -15,6 +15,13 @@ class Arguments:
             }
         ]
     })
+    DEFAULT_EVENT = {
+        "requestContext": {
+            "identity": {
+                "userArn": None
+            }
+        }
+    }
 
     def __init__(self):
         self.iam_groups_dict = {}
