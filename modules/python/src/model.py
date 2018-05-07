@@ -11,12 +11,26 @@ class IamGroups:
 
     def __init__(self, **kwargs):
         self.iam_groups = kwargs.get('iam_groups', [])
-        args.arguments.logger.debug(self.iam_groups)
+        args.arguments.logger.debug(f"iam_groups= {self.iam_groups}")
         self.aws_iam = boto3.resource('iam')
         self.errors = []
 
-    def __get_fake_policy(self, aws_group):
-        pass
+        self.event = helper.get_catch(fn=lambda: kwargs.get('event'), default=args.Arguments.DEFAULT_EVENT,
+                                      ignore_result=False, defaultIfNone=True)
+        self.__event_user_name = None
+
+        args.arguments.logger.info(f"API caller user_name: {self.event_user_name}")
+
+    @property
+    def event_user_name(self):
+        if not self.__event_user_name:
+            user_arn = self.event['requestContext']["identity"]["userArn"]
+            if user_arn:  # user_arn = "arn:aws:iam::239062223385:user/operations/ext-phuong-huynh"
+                self.__event_user_name = user_arn.split("/")[-1]
+        return self.__event_user_name
+
+    # def __get_fake_policy(self, aws_group):
+    #     pass
 
     def authorize(self):
         now = datetime.now()
@@ -41,6 +55,10 @@ class IamGroups:
             group_name = group['group_name']
             aws_group = self.aws_iam.Group(name=group_name)
             for user_name in group['user_names']:
+                if self.event_user_name and user_name.upper() != self.event_user_name.upper():
+                    args.arguments.logger.debug(f"Ignore process for user {user_name} since he/she not the API caller")
+                    continue
+
                 aws_user = self.aws_iam.User(name=user_name)
                 error = helper.get_catch(fn=lambda: processor(aws_group, aws_user))
                 if error:
