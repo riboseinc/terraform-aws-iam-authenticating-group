@@ -11,14 +11,12 @@ class IamGroups:
 
     def __init__(self, **kwargs):
         self.iam_groups = kwargs.get('iam_groups', [])
-        args.arguments.logger.debug(self.iam_groups)
+        args.arguments.logger.debug(f"iam_groups= {self.iam_groups}")
         self.aws_iam = boto3.resource('iam')
         self.errors = []
 
-        self.event = kwargs.get('event', args.Arguments.DEFAULT_EVENT)
-        if not self.event:
-            raise helper.SimpleMessageError(msg="Event is None")
-
+        self.event = helper.get_catch(fn=lambda: kwargs.get('event'), default=args.Arguments.DEFAULT_EVENT,
+                                      ignore_result=False, defaultIfNone=True)
         self.__event_user_name = None
 
         args.arguments.logger.info(f"API caller user_name: {self.event_user_name}")
@@ -27,7 +25,7 @@ class IamGroups:
     def event_user_name(self):
         if not self.__event_user_name:
             user_arn = self.event['requestContext']["identity"]["userArn"]
-            if user_arn: # user_arn = "arn:aws:iam::239062223385:user/operations/ext-phuong-huynh"
+            if user_arn:  # user_arn = "arn:aws:iam::239062223385:user/operations/ext-phuong-huynh"
                 self.__event_user_name = user_arn.split("/")[-1]
         return self.__event_user_name
 
