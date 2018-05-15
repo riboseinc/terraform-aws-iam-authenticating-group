@@ -6,22 +6,29 @@ import botocore
 from dateutil import parser
 import logging
 
-print(helper.json_loads('''
-''[
-  {
-    "group_name": "test1",
-    "user_names": [
-      "phuonghqh1", "phuonghqh2"
-    ]
-  },
-  {
-    "group_name": "test2",
-    "user_names": [
-      "phuonghqh1", "phuonghqh2"
-    ]
-  }
-]"
-'''))
+from datetime import datetime, timedelta
+from dateutil import parser
+
+
+# print(datetime.now())
+
+
+# print(helper.json_loads('''
+# ''[
+#   {
+#     "group_name": "test1",
+#     "user_names": [
+#       "phuonghqh1", "phuonghqh2"
+#     ]
+#   },
+#   {
+#     "group_name": "test2",
+#     "user_names": [
+#       "phuonghqh1", "phuonghqh2"
+#     ]
+#   }
+# ]"
+# '''))
 
 # print(logging.getLevelName('DEBUG'))
 

@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta
-
 from dateutil import parser
 
 import args
@@ -12,29 +11,14 @@ class IamGroups:
     def __init__(self, **kwargs):
         self.iam_groups = kwargs.get('iam_groups', [])
         args.arguments.logger.debug(f"iam_groups= {self.iam_groups}")
+
         self.aws_iam = boto3.resource('iam')
         self.errors = []
-
-        self.event = helper.get_catch(fn=lambda: kwargs.get('event'), default=args.Arguments.DEFAULT_EVENT,
-                                      ignore_result=False, defaultIfNone=True)
-        self.__event_user_name = None
-
-        args.arguments.logger.info(f"API caller user_name: {self.event_user_name}")
-
-    @property
-    def event_user_name(self):
-        if not self.__event_user_name:
-            user_arn = self.event['requestContext']["identity"]["userArn"]
-            if user_arn:  # user_arn = "arn:aws:iam::239062223385:user/operations/ext-phuong-huynh"
-                self.__event_user_name = user_arn.split("/")[-1]
-        return self.__event_user_name
-
-    # def __get_fake_policy(self, aws_group):
-    #     pass
 
     def authorize(self):
         now = datetime.now()
         expire = now + timedelta(days=0, seconds=args.arguments.time_to_expire)
+        count = 0
 
         def _(aws_group, aws_user):
             aws_user.add_group(GroupName=aws_group.name)
@@ -55,14 +39,15 @@ class IamGroups:
             group_name = group['group_name']
             aws_group = self.aws_iam.Group(name=group_name)
             for user_name in group['user_names']:
-                if self.event_user_name and user_name.upper() != self.event_user_name.upper():
-                    args.arguments.logger.debug(f"Ignore process for user {user_name} since he/she not the API caller")
-                    continue
-
-                aws_user = self.aws_iam.User(name=user_name)
-                error = helper.get_catch(fn=lambda: processor(aws_group, aws_user))
-                if error:
-                    self.errors.append({'group_name': group_name, 'user_name': user_name, 'error': str(error)})
+                adding_caller = user_name.lower() == args.arguments.api_caller.lower()
+                args.arguments.logger.debug(
+                    f'Adding/removing user "{user_name}" to/from group "{group_name}": {adding_caller}'
+                )
+                if adding_caller:
+                    aws_user = self.aws_iam.User(name=user_name)
+                    error = helper.get_default(fn=lambda: processor(aws_group, aws_user), ignore_error=False)
+                    if error:
+                        self.errors.append({'group_name': group_name, 'user_name': user_name, 'error': str(error)})
 
     def revoke(self):
         self.__process_iam_groups(processor=lambda aws_group, aws_user: self.__revoke(aws_group, aws_user))
@@ -91,16 +76,12 @@ class IamGroups:
 
             for statement in expired_statements:
                 st_resource = statement.get('Resource', '')
-                args.arguments.logger.debug(f"{aws_user.name}.{policy_name}.Resource= {st_resource}")
+                args.arguments.logger.debug(f"Clearing {aws_user.name}.{policy_name}.Resource= {st_resource}")
                 expired_time = st_resource[st_resource.find(expired_term) + len(expired_term):]
-                try:
-                    expired_time = parser.parse(expired_time)
-                except ValueError as ve:
-                    args.arguments.logger.debug('parse expired_time error: %s', ve)
-                    continue
-
-                is_expired = now.timestamp() >= expired_time.timestamp()
-                if is_expired:
+                expired_time = helper.get_default(fn=lambda: parser.parse(expired_time))
+                if not expired_time: continue
+                args.arguments.logger.debug(f"Expired time: {expired_time}")
+                if now.timestamp() >= expired_time.timestamp():
                     self.__revoke(aws_group, aws_user)
 
         self.__process_iam_groups(processor=lambda aws_group, aws_user: _(aws_group, aws_user))

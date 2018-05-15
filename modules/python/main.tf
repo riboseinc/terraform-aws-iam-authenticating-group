@@ -3,6 +3,7 @@ resource "template_dir" "this" {
   destination_dir = "${path.module}/.archive"
 
   vars {
+    module_name = "${var.module_name}"
     log_level  = "${var.log_level}"
     iam_groups = "${jsonencode(var.iam_groups)}"
     time_to_expire  = "${var.time_to_expire}"

@@ -1,5 +1,5 @@
-variable "log_level" {
-}
+variable "module_name" {}
+variable "log_level" {}
 
 variable "iam_groups" {
   type    = "list"

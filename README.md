@@ -151,6 +151,17 @@ output "dynamic-iamgroup-api-invoke-url" {
 }
 ```
 
+### Limitations on IAM Entities and Objects
+
+AWS IAM has certain [limits](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_iam-limits.html) that affect this module's operations, including:
+
+  - A user can only have max 10 IAM groups
+  - A user/group/role can only have max 10 IAM policies
+  
+Some works around:
+  
+  - Use a separate user account if reached 10 IAM groups
+
 ### Bash to execute the API
 
 Check out [aws-authenticating-secgroup-scripts](https://github.com/riboseinc/aws-iam-authenticating-group-scripts)
