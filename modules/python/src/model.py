@@ -18,7 +18,6 @@ class IamGroups:
     def authorize(self):
         now = datetime.now()
         expire = now + timedelta(days=0, seconds=args.arguments.time_to_expire)
-        count = 0
 
         def _(aws_group, aws_user):
             aws_user.add_group(GroupName=aws_group.name)
@@ -76,10 +75,13 @@ class IamGroups:
 
             for statement in expired_statements:
                 st_resource = statement.get('Resource', '')
-                args.arguments.logger.debug(f"Clearing {aws_user.name}.{policy_name}.Resource= {st_resource}")
+                args.arguments.logger.debug(f'Clearing {aws_user.name}.{policy_name}.Resource= {st_resource}')
+
                 expired_time = st_resource[st_resource.find(expired_term) + len(expired_term):]
                 expired_time = helper.get_default(fn=lambda: parser.parse(expired_time))
-                if not expired_time: continue
+                if not expired_time:
+                    continue
+
                 args.arguments.logger.debug(f"Expired time: {expired_time}")
                 if now.timestamp() >= expired_time.timestamp():
                     self.__revoke(aws_group, aws_user)

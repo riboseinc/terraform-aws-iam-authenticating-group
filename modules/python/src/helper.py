@@ -13,7 +13,7 @@ def get_default(fn, default=None, ignore_error=True, **kwargs):
         if result:
             value = result
     except Exception as error:
-        print(f"error: {str(error)}")
+        print(f"catching error: {str(error)}")
         if not ignore_error:
             value = error
 
@@ -54,12 +54,12 @@ def handler(fn_handler, action, event=None):
                 'details': iam_groups.errors
             }
 
-    except BaseException as error:
+    except Exception as error:
         response['statusCode'] = 500
         response['body']['success'] = False
         response['body']['error'] = {
             'message': getattr(error, 'msg', str(error)),
-            'details': f"type of error {type(error).__name__}"
+            'details': f'type of error {type(error).__name__}'
         }
 
     response['body'] = json.dumps(response['body'])
