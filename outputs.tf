@@ -1,5 +1,6 @@
 output "invoke_url" {
-  value       = "${aws_api_gateway_deployment.this.invoke_url}${aws_api_gateway_resource.this.path}"
+  value       = "${aws_api_gateway_stage.this.invoke_url}${aws_api_gateway_resource.this.path}"
+//  value = "something"
   description = "API Rest invoke URL"
 }
 
