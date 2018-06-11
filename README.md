@@ -20,25 +20,28 @@ This is the Lambda function that runs `add-user-to-group` and
 
 Steps:
 
-    1.  Authenticate the user via AWS IAM (Signature Version 4).
-        Eligibility to authenticate is set in a policy outside of this module.
-        The user will provide an AWS v4 signature for authentication.
-        Return **403** if not authorized.
+    1. Authenticate the user via AWS IAM (Signature Version 4).
+       Eligibility to authenticate is set in a policy outside of this module.
+       The user will provide an AWS v4 signature for authentication.
+       Return **403** if not authorized.
 
     3. If the request is a `POST /membership`
-        -   The function will issue a `add-user-to-group` action for the
-            user, with a description that indicates the "time" that this membership
-            was added.
-            Return **201**.
-        -   If the user is already in the IAM group,
-            (TODO: How to find out the time user was added?)
-            Return **200**
+       -  The function will issue a `add-user-to-group` action for the user. 
+       -  An inline `fake-policy-[group_name]` is attached to user and used as a rule 
+           that indicates the "time" that this membership was added.
+       -  Return **200**.
 
     4. If the request is a `DELETE /membership`
-        -   If the user is in the IAM group, issue a `remove-user-from-group` on it. Return **200**.
-        -   If the user is not in the IAM group, do nothing. Return **404**.
+       -  If the user is in the IAM group, issue a `remove-user-from-group` on it
+       -  If the user is not in the IAM group, do nothing
+       -  Return **200**.
+    
+    5. If any request has errors, e.g. a user / a group not found, internal API failed.
+       -  Return **400** and error details
+    
+    6. Return **500** for other errors
 
-    3. Done.
+    7. Done.
 
 ### Continuous Lambda Function: Removing Rules
 
@@ -52,11 +55,11 @@ Steps:
 
     1. The function will describe all rules in the given IAM group.
 
-    2. For every rule, it will check the description for the time of last update.
-        -   If the elapsed time is less than the configured X seconds, don't do anything.
-        -   If the elapsed time is more than the configured X seconds, it means that the
-            rule has expired, and it should execute `revoke-iam-group` on it.
-            (e.g., if all rules are expired, the IAM group should now contain no rules)
+    2. For every rule, it will check the time of last update.
+       -  If the elapsed time is less than the configured X seconds, don't do anything.
+       -  If the elapsed time is more than the configured X seconds, it means that the
+          rule has expired, and it should execute `revoke-iam-group` on it.
+          (e.g., if all rules are expired, the IAM group should now contain no rules)
 
     3. Done.
 

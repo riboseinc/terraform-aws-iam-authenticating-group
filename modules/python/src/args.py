@@ -34,8 +34,6 @@ class Arguments:
         self.__module_name = None
         self.__api_caller = ""
 
-        # logging.getLogger(name=arguments.module_name).handlers = []
-
     @property
     def logger(self):
         if not self.__logger:
