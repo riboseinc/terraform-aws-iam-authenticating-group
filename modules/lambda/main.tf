@@ -8,8 +8,8 @@ resource "aws_lambda_function" "this" {
   role             = "${var.role_arn}"
   runtime          = "python3.6"
 
-  filename         = "${var.zip_path}"
-  source_code_hash = "${var.zip_path_base64sha256}"
+  filename         = "${var.source_code_path}"
+  source_code_hash = "${var.source_code_hash}"
 
   function_name    = "${var.name}"
   handler          = "${var.handler}"
@@ -18,7 +18,8 @@ resource "aws_lambda_function" "this" {
 
   lifecycle {
     ignore_changes = [
-      "source_code_hash"
+      "source_code_hash",
+      "last_modified"
     ]
   }
 }

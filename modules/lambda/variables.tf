@@ -1,7 +1,7 @@
 variable "name" {}
 variable "handler" {}
-variable "zip_path" {}
-variable "zip_path_base64sha256" {}
+variable "source_code_path" {}
+variable "source_code_hash" {}
 variable "role_arn" {}
 variable "description" {
   default = "created by terraform-aws-authenticating-iam"

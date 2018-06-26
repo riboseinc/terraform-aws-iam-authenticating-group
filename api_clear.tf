@@ -5,8 +5,8 @@ module "lamda_clear" {
   description = "${var.description}"
   handler               = "${module.python.clear_handler}"
   role_arn              = "${module.sts_lambda.arn}"
-  zip_path              = "${module.python.path}"
-  zip_path_base64sha256 = "${module.python.path_base64sha256}"
+  source_code_path              = "${module.python.output_path}"
+  source_code_hash = "${module.python.output_base64sha256}"
 }
 
 resource "aws_cloudwatch_event_rule" "clear" {
