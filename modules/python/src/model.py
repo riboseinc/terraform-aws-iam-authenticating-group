@@ -38,11 +38,11 @@ class IamGroups:
             group_name = group['group_name']
             aws_group = self.aws_iam.Group(name=group_name)
             for user_name in group['user_names']:
-                adding_caller = user_name.lower() == args.arguments.api_caller.lower()
+                processing = user_name.lower() == args.arguments.api_caller.lower() or args.arguments.event is None
                 args.arguments.logger.debug(
-                    f'Adding/removing user "{user_name}" to/from group "{group_name}": {adding_caller}'
+                    f'Adding/removing user "{user_name}" to/from group "{group_name}": {processing}'
                 )
-                if adding_caller:
+                if processing:
                     aws_user = self.aws_iam.User(name=user_name)
                     error = helper.get_default(fn=lambda: processor(aws_group, aws_user), ignore_error=False)
                     if error:
