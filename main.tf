@@ -89,4 +89,49 @@ module "python" {
   module_name     = "${var.name}"
 }
 
+//data "aws_s3_bucket" "this" {
+//  bucket = "terraform-aws-iam-authenticating-group"
+//}
+
+//data "aws_s3_bucket_object" "bootstrap_script" {
+//  bucket = "terraform-aws-iam-authenticating-group"
+//  key    = "ec2-bootstrap-script.sh"
+//}
+
+//data "template_file" "init" {
+//  template = "${file("${path.module}/init.tpl")}"
+//
+//  vars {
+//    consul_address = "${aws_instance.consul.private_ip}"
+//  }
+//}
+
+resource "local_file" "foo" {
+  content     = "${jsonencode(var.iam_groups)}"
+  filename = "${path.module}/iam_groups.json"
+}
+
+
+resource "aws_s3_bucket" "this" {
+  bucket = "${var.name}"
+  acl    = "private"
+
+/*
+  tags {
+    Name        = "My bucket"
+    Environment = "Dev"
+  }
+*/
+}
+
+
+resource "aws_s3_bucket_object" "this" {
+  bucket = "${aws_s3_bucket.this.bucket}"
+//  bucket = "${data.aws_s3_bucket.this.bucket}"
+  key = "args.json"
+  source = "${path.module}/iam_groups.json"
+//  content_type = "text/html"
+//  etag = "${md5(file("src/index.html"))}"
+}
+
 /**** check out "api_*.tf" ****/

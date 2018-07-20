@@ -3,7 +3,7 @@ output "output_path" {
 }
 
 output "output_base64sha256" {
-  value = "${local.vars_base64sha256}"
+  value = "${data.archive_file.service_py.output_base64sha256}"
 }
 
 output "authorize_handler" {

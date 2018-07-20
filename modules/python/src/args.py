@@ -1,6 +1,7 @@
 import json
 import helper
 import logging
+import boto3
 
 
 class Arguments:
@@ -59,7 +60,11 @@ class Arguments:
     @property
     def iam_groups(self):
         if not self.__iam_groups:
-            self.__iam_groups = helper.json_loads('''${iam_groups}''')
+            s3 = boto3.resource('s3')
+            obj = s3.Object('${iam_groups_bucket}', 'args.json')
+            json = obj.get()['Body'].read().decode('utf-8')
+            self.__iam_groups = helper.json_loads(json)
+
         return self.__iam_groups
 
     @iam_groups.setter

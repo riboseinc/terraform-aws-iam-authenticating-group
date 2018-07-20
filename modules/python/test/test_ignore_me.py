@@ -10,6 +10,14 @@ from datetime import datetime, timedelta
 from dateutil import parser
 
 
+
+s3 = boto3.resource('s3')
+
+obj = s3.Object('terraform-aws-iam-authenticating-group', 'args.json')
+str = obj.get()['Body'].read().decode('utf-8')
+print(str)
+
+
 # print(datetime.now())
 
 
