@@ -83,7 +83,7 @@ class Arguments:
 
     @property
     def api_caller(self):
-        if not self.__api_caller:
+        if self.event is not None and self.__api_caller is None:
             user_arn = self.event['requestContext']["identity"]["userArn"]
             if user_arn:
                 self.__api_caller = user_arn.split("/")[-1]
