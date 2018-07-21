@@ -15,6 +15,13 @@ module "dynamic-iam-group" {
         "phuonghqh1",
         "phuonghqh2"
       ]
+    },
+    {
+      "group_name" = "test2",
+      "user_names" = [
+        "phuonghqh1",
+        "phuonghqh2"
+      ]
     }
   ]
 }
