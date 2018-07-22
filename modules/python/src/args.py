@@ -20,15 +20,22 @@ class Arguments:
 
     def __init__(self):
         self.__event = None
-        self.__iam_groups = None
         self.__time_to_expire = None
         self.__logger = None
         self.__module_name = None
 
-        self.iam_groups_dict = {}
         self.api_caller = "SYSTEM"
         self.source_ip = None
         self.cidr_ip = None
+        # self.__iam_groups = None
+
+    @property
+    def iam_groups(self):
+        s3 = boto3.resource('s3')
+        obj = s3.Object('${iam_groups_bucket}', 'args.json')
+        return helper.json_loads(
+            obj.get()['Body'].read().decode('utf-8')
+        )
 
     @property
     def event(self):
@@ -37,8 +44,6 @@ class Arguments:
     @event.setter
     def event(self, event):
         try:
-            assert event is not None
-
             self.__event = event
 
             user_arn = self.__event['requestContext']["identity"]["userArn"]
@@ -47,7 +52,7 @@ class Arguments:
 
             self.source_ip = event['requestContext']['identity']['sourceIp']
             self.cidr_ip = f'{self.source_ip}/32'
-        except (KeyError, AssertionError) as error:
+        except (KeyError, AssertionError, TypeError) as error:
             print(f"Ignore error {str(error)}")
 
     @property
@@ -72,19 +77,19 @@ class Arguments:
             self.__module_name = helper.get_default(fn=lambda: str("${module_name}"), default="dln")
         return self.__module_name
 
-    @property
-    def iam_groups(self):
-        if not self.__iam_groups:
-            s3 = boto3.resource('s3')
-            obj = s3.Object('${iam_groups_bucket}', 'args.json')
-            json = obj.get()['Body'].read().decode('utf-8')
-            self.__iam_groups = helper.json_loads(json)
+    # @property
+    # def iam_groups(self):
+    #     if not self.__iam_groups:
+    #         s3 = boto3.resource('s3')
+    #         obj = s3.Object('${iam_groups_bucket}', 'args.json')
+    #         json = obj.get()['Body'].read().decode('utf-8')
+    #         self.__iam_groups = helper.json_loads(json)
+    #
+    #     return self.__iam_groups
 
-        return self.__iam_groups
-
-    @iam_groups.setter
-    def iam_groups(self, iam_groups):
-        self.__iam_groups = iam_groups
+    # @iam_groups.setter
+    # def iam_groups(self, iam_groups):
+    #     self.__iam_groups = iam_groups
 
     @property
     def time_to_expire(self):

@@ -13,7 +13,7 @@ from dateutil import parser
 
 s3 = boto3.resource('s3')
 
-obj = s3.Object('terraform-aws-iam-authenticating-group', 'args.json')
+obj = s3.Object('example-dynamic-iam-groups', 'args.json')
 str = obj.get()['Body'].read().decode('utf-8')
 print(str)
 
