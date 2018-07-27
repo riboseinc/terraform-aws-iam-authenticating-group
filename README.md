@@ -70,8 +70,10 @@ Check out [examples](https://github.com/riboseinc/terraform-aws-iam-authenticati
 
 
 #### Provider Config
-
-- Where should this API deployed to, more info [aws](https://www.terraform.io/docs/providers/aws)
+  
+  - Arguments will be exposed to S3 Bucket with name `${bucket_name}/args.json`. User can update it with new values. 
+  
+  - Where should this API deployed to, more info [aws](https://www.terraform.io/docs/providers/aws)
 
 ```hcl-terraform
 provider "aws" {
@@ -87,6 +89,7 @@ module "dynamic-iamgroup" {
   source = "riboseinc/iam-authenticating-group/aws"
 
   name           = "example-dynamic-iam-groups"
+  bucket_name    = "example-dynamic-iam-groups-bucket"
   description    = "example usage of terraform-aws-authenticating-iam"
   
   # in seconds
@@ -119,6 +122,7 @@ module "dynamic-iamgroup" {
 module "dynamic-iam-group" {
   source         = "../../"
   name           = "example-dynamic-iam-groups"
+  bucket_name    = "example-dynamic-iam-groups-bucket"
   description    = "example usage of terraform-aws-authenticating-iam"
   time_to_expire = 300
   log_level = "INFO"

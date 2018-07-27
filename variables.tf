@@ -8,6 +8,11 @@ variable "name" {
   description = "Creates a unique name beginning with the specified prefix, useful for searching later"
 }
 
+
+variable "bucket_name" {
+  description = "S3 Bucketname used to store arguments"
+}
+
 variable "deployment_stage" {
   default     = "dev"
   description = "Api deployment stages, ex: staging, production..."

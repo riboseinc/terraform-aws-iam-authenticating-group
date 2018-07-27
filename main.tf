@@ -96,7 +96,7 @@ resource "local_file" "foo" {
 
 
 resource "aws_s3_bucket" "this" {
-  bucket = "${var.name}"
+  bucket = "${var.bucket_name}"
   acl    = "private"
 }
 
