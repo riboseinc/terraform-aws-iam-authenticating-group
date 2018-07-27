@@ -32,8 +32,9 @@ def get_default(fn, default=None, ignore_error=True, **kwargs):
 def handler(fn_handler, action, event=None):
     args.arguments.logger.info(f"Boto version: {boto3.__version__}")
     args.arguments.logger.info(f"event= {event}")
-    args.arguments.logger.info(f'"{args.arguments.api_caller}" calling API "{action.lower()}"')
     args.arguments.event = event
+
+    args.arguments.logger.info(f'"{args.arguments.api_caller}" calling API "{action.lower()}"')
 
     response = {
         "statusCode": 200,

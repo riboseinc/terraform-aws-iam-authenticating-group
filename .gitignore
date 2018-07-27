@@ -21,3 +21,5 @@ invoke_it.sh
 api_clear_api.tf
 terraform.tfvars
 ignoreme*
+.src.zip
+iam_groups.json

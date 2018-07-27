@@ -89,4 +89,22 @@ module "python" {
   module_name     = "${var.name}"
 }
 
+resource "local_file" "foo" {
+  content     = "${jsonencode(var.iam_groups)}"
+  filename = "${path.module}/iam_groups.json"
+}
+
+
+resource "aws_s3_bucket" "this" {
+  bucket = "${var.name}"
+  acl    = "private"
+}
+
+
+resource "aws_s3_bucket_object" "this" {
+  bucket = "${aws_s3_bucket.this.bucket}"
+  key = "args.json"
+  source = "${path.module}/iam_groups.json"
+}
+
 /**** check out "api_*.tf" ****/

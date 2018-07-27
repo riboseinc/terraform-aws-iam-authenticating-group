@@ -1,6 +1,7 @@
 import json
 import helper
 import logging
+import boto3
 
 
 class Arguments:
@@ -16,23 +17,43 @@ class Arguments:
             }
         ]
     })
-    DEFAULT_EVENT = {
-        "requestContext": {
-            "identity": {
-                "userArn": None
-            }
-        }
-    }
 
     def __init__(self):
-        self.event = Arguments.DEFAULT_EVENT
-        self.iam_groups_dict = {}
-
-        self.__iam_groups = None
+        self.__event = None
         self.__time_to_expire = None
         self.__logger = None
         self.__module_name = None
-        self.__api_caller = ""
+
+        self.api_caller = "SYSTEM"
+        self.source_ip = None
+        self.cidr_ip = None
+        # self.__iam_groups = None
+
+    @property
+    def iam_groups(self):
+        s3 = boto3.resource('s3')
+        obj = s3.Object('${iam_groups_bucket}', 'args.json')
+        return helper.json_loads(
+            obj.get()['Body'].read().decode('utf-8')
+        )
+
+    @property
+    def event(self):
+        return self.__event
+
+    @event.setter
+    def event(self, event):
+        try:
+            self.__event = event
+
+            user_arn = self.__event['requestContext']["identity"]["userArn"]
+            if user_arn:
+                self.api_caller = user_arn.split("/")[-1]
+
+            self.source_ip = event['requestContext']['identity']['sourceIp']
+            self.cidr_ip = f'{self.source_ip}/32'
+        except (KeyError, AssertionError, TypeError) as error:
+            print(f"Ignore error {str(error)}")
 
     @property
     def logger(self):
@@ -56,15 +77,19 @@ class Arguments:
             self.__module_name = helper.get_default(fn=lambda: str("${module_name}"), default="dln")
         return self.__module_name
 
-    @property
-    def iam_groups(self):
-        if not self.__iam_groups:
-            self.__iam_groups = helper.json_loads('''${iam_groups}''')
-        return self.__iam_groups
+    # @property
+    # def iam_groups(self):
+    #     if not self.__iam_groups:
+    #         s3 = boto3.resource('s3')
+    #         obj = s3.Object('${iam_groups_bucket}', 'args.json')
+    #         json = obj.get()['Body'].read().decode('utf-8')
+    #         self.__iam_groups = helper.json_loads(json)
+    #
+    #     return self.__iam_groups
 
-    @iam_groups.setter
-    def iam_groups(self, iam_groups):
-        self.__iam_groups = iam_groups
+    # @iam_groups.setter
+    # def iam_groups(self, iam_groups):
+    #     self.__iam_groups = iam_groups
 
     @property
     def time_to_expire(self):
@@ -76,17 +101,17 @@ class Arguments:
     def time_to_expire(self, seconds):
         self.__time_to_expire = int(seconds)
 
-    @property
-    def api_caller(self):
-        if not self.__api_caller:
-            user_arn = self.event['requestContext']["identity"]["userArn"]
-            if user_arn:
-                self.__api_caller = user_arn.split("/")[-1]
-
-        if self.__api_caller:
-            return self.__api_caller
-
-        return "system"
+    # @property
+    # def api_caller(self):
+    #     if self.event and self.__api_caller:
+    #         user_arn = self.event['requestContext']["identity"]["userArn"]
+    #         if user_arn:
+    #             self.__api_caller = user_arn.split("/")[-1]
+    #
+    #     if self.__api_caller:
+    #         return self.__api_caller
+    #
+    #     return "system"
 
 
 arguments = Arguments()
