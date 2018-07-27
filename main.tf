@@ -9,7 +9,7 @@ locals {
   clear_event_rule_name = "clear-expired-${var.name}"
   clear_event_rate      = "rate(1 minute)"
 
-  api_log_format = <<EOF
+  api_log_format        = <<EOF
     {
       "requestId": "$context.requestId",
       "ip": "$context.identity.sourceIp",
@@ -47,7 +47,7 @@ resource "aws_api_gateway_deployment" "this" {
 }
 
 resource "aws_cloudwatch_log_group" "rest_api" {
-  name       = "${var.name}-${var.deployment_stage}"
+  name = "${var.name}-${var.deployment_stage}"
 }
 
 resource "aws_api_gateway_stage" "this" {
@@ -57,7 +57,7 @@ resource "aws_api_gateway_stage" "this" {
 
   access_log_settings {
     destination_arn = "${aws_cloudwatch_log_group.rest_api.arn}"
-    format = "${replace(chomp(local.api_log_format), "\n", "")}"
+    format          = "${replace(chomp(local.api_log_format), "\n", "")}"
   }
 }
 
@@ -82,15 +82,16 @@ resource "aws_api_gateway_method_settings" "this" {
 }
 
 module "python" {
-  source          = "modules/python"
-  log_level = "${var.log_level}"
-  iam_groups = "${var.iam_groups}"
-  time_to_expire  = "${var.time_to_expire}"
-  module_name     = "${var.name}"
+  source         = "modules/python"
+  log_level      = "${var.log_level}"
+  iam_groups     = "${var.iam_groups}"
+  time_to_expire = "${var.time_to_expire}"
+  module_name    = "${var.name}"
+  bucket_name    = "${var.bucket_name}"
 }
 
 resource "local_file" "foo" {
-  content     = "${jsonencode(var.iam_groups)}"
+  content  = "${jsonencode(var.iam_groups)}"
   filename = "${path.module}/iam_groups.json"
 }
 
@@ -103,7 +104,7 @@ resource "aws_s3_bucket" "this" {
 
 resource "aws_s3_bucket_object" "this" {
   bucket = "${aws_s3_bucket.this.bucket}"
-  key = "args.json"
+  key    = "args.json"
   source = "${path.module}/iam_groups.json"
 }
 

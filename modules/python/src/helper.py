@@ -20,15 +20,6 @@ def get_default(fn, default=None, ignore_error=True, **kwargs):
     return value
 
 
-# def get_catch(fn, ignore_error=False, ignore_result=True, default=None, default_if_none=False, **kwargs):
-#     try:
-#         result = fn(**kwargs)
-#         result = None if ignore_result else result
-#         return default if not result and default_if_none else result
-#     except Exception as error:
-#         return default if ignore_error else error
-
-
 def handler(fn_handler, action, event=None):
     args.arguments.logger.info(f"Boto version: {boto3.__version__}")
     args.arguments.logger.info(f"event= {event}")
