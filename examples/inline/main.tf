@@ -5,6 +5,7 @@ provider "aws" {
 module "dynamic-iam-group" {
   source         = "../../"
   name           = "example-dynamic-iam-groups"
+  bucket_name    = "example-dynamic-iam-groups-bucket"
   description    = "example usage of terraform-aws-authenticating-iam"
   time_to_expire = 300
   log_level = "DEBUG"
