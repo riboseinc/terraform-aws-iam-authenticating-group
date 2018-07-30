@@ -32,7 +32,7 @@ class Arguments:
     @property
     def iam_groups(self):
         s3 = boto3.resource('s3')
-        obj = s3.Object('${iam_groups_bucket}', 'args.json')
+        obj = s3.Object('${bucket_name}', 'args.json')
         return helper.json_loads(
             obj.get()['Body'].read().decode('utf-8')
         )
@@ -77,20 +77,6 @@ class Arguments:
             self.__module_name = helper.get_default(fn=lambda: str("${module_name}"), default="dln")
         return self.__module_name
 
-    # @property
-    # def iam_groups(self):
-    #     if not self.__iam_groups:
-    #         s3 = boto3.resource('s3')
-    #         obj = s3.Object('${iam_groups_bucket}', 'args.json')
-    #         json = obj.get()['Body'].read().decode('utf-8')
-    #         self.__iam_groups = helper.json_loads(json)
-    #
-    #     return self.__iam_groups
-
-    # @iam_groups.setter
-    # def iam_groups(self, iam_groups):
-    #     self.__iam_groups = iam_groups
-
     @property
     def time_to_expire(self):
         if self.__time_to_expire is None:
@@ -100,18 +86,6 @@ class Arguments:
     @time_to_expire.setter
     def time_to_expire(self, seconds):
         self.__time_to_expire = int(seconds)
-
-    # @property
-    # def api_caller(self):
-    #     if self.event and self.__api_caller:
-    #         user_arn = self.event['requestContext']["identity"]["userArn"]
-    #         if user_arn:
-    #             self.__api_caller = user_arn.split("/")[-1]
-    #
-    #     if self.__api_caller:
-    #         return self.__api_caller
-    #
-    #     return "system"
 
 
 arguments = Arguments()
