@@ -2,6 +2,7 @@ import json
 import helper
 import logging
 import boto3
+from os.path import basename, splitext
 
 
 class Arguments:
@@ -32,10 +33,16 @@ class Arguments:
     @property
     def iam_groups(self):
         s3 = boto3.resource('s3')
-        obj = s3.Object('${bucket_name}', 'args.json')
-        return helper.json_loads(
-            obj.get()['Body'].read().decode('utf-8')
-        )
+        bucket = s3.Bucket('${bucket_name}')
+        groups = []
+        for group_json in bucket.objects.all():
+            users = helper.json_loads(group_json.get()['Body'].read().decode('utf-8'))
+            group_name = splitext(basename(group_json.key))[0]
+            groups.append({
+                'group_name': group_name,
+                'user_names': users
+            })
+        return groups
 
     @property
     def event(self):

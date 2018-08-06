@@ -8,14 +8,17 @@ import logging
 
 from datetime import datetime, timedelta
 from dateutil import parser
-
+from os.path import basename, splitext
+# now you can call it directly with basename
+# print(basename("/a/b/c.txt"))
 
 
 s3 = boto3.resource('s3')
-
-obj = s3.Object('example-dynamic-iam-groups', 'args.json')
-str = obj.get()['Body'].read().decode('utf-8')
-print(str)
+bucket = s3.Bucket('example-dynamic-iam-groups-bucket')
+# obj = s3.Object('example-dynamic-iam-groups', 'args.json')
+# str = obj.get()['Body'].read().decode('utf-8')
+for obj in bucket.objects.all():
+    print(splitext(basename(obj.key))[0])
 
 
 # print(datetime.now())

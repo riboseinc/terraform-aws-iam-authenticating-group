@@ -9,23 +9,28 @@ module "dynamic-iam-group" {
   description    = "example usage of terraform-aws-authenticating-iam"
   time_to_expire = 300
   log_level = "DEBUG"
-  iam_groups     = [
-    {
-      "group_name" = "test1",
-      "user_names" = [
-        "phuonghqh1",
-        "phuonghqh2"
-      ]
-    },
-    {
-      "group_name" = "test2",
-      "user_names" = [
-        "phuonghqh1",
-        "phuonghqh2"
-      ]
-    }
+
+  iam_groups = [
+    "test1.json", "test2.json"
   ]
 }
+
+//iam_groups     = [
+//  {
+//    "group_name" = "test1",
+//    "user_names" = [
+//      "phuonghqh1",
+//      "phuonghqh2"
+//    ]
+//  },
+//  {
+//    "group_name" = "test2",
+//    "user_names" = [
+//      "phuonghqh1",
+//      "phuonghqh2"
+//    ]
+//  }
+//]
 
 resource "aws_iam_policy" "this" {
   description = "Policy Developer IAM Access"

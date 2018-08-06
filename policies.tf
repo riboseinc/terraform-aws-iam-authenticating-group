@@ -1,9 +1,9 @@
 module "sts_lambda" {
-  source = "modules/sts_assume_role"
+  source             = "modules/sts_assume_role"
 
   service_identifier = "lambda.amazonaws.com"
-  name = "${var.name}-lambda"
-  actions = [
+  name               = "${var.name}-lambda"
+  actions            = [
     "iam:DeleteUserPolicy",
     "iam:PutUserPolicy",
     "iam:GetUser",
@@ -20,15 +20,15 @@ module "sts_lambda" {
     "logs:CreateLogStream",
     "logs:PutLogEvents"
   ]
-  description = "used by Lambda"
+  description        = "used by Lambda"
 }
 
 module "sts_gateway" {
-  source = "modules/sts_assume_role"
+  source             = "modules/sts_assume_role"
 
   service_identifier = "apigateway.amazonaws.com"
-  name = "${var.name}-gateway"
-  actions = [
+  name               = "${var.name}-gateway"
+  actions            = [
     "logs:CreateLogGroup",
     "logs:CreateLogStream",
     "logs:DescribeLogGroups",
@@ -37,5 +37,5 @@ module "sts_gateway" {
     "logs:GetLogEvents",
     "logs:FilterLogEvents"
   ]
-  description = "used by API Gateway to write log (CloudWatch)"
+  description        = "used by API Gateway to write log (CloudWatch)"
 }

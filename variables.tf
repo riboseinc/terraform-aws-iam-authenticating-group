@@ -4,10 +4,9 @@ variable "description" {
 }
 
 variable "name" {
-  default = "terraform-aws-authenticating-iam"
+  default     = "terraform-aws-authenticating-iam"
   description = "Creates a unique name beginning with the specified prefix, useful for searching later"
 }
-
 
 variable "bucket_name" {
   description = "S3 Bucketname used to store arguments"
@@ -19,9 +18,13 @@ variable "deployment_stage" {
 }
 
 variable "iam_groups" {
-  type        = "list"
-  description = "Where to add the rules to"
+  type = "list"
 }
+
+//variable "iam_users_file" {
+//  type        = "string"
+//  description = "Where to add the rules to"
+//}
 
 variable "time_to_expire" {
   default     = 600
@@ -29,6 +32,6 @@ variable "time_to_expire" {
 }
 
 variable "log_level" {
-  default = "INFO"
+  default     = "INFO"
   description = "Set level of Cloud Watch Log to INFO or DEBUG"
 }
