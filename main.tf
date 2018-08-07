@@ -84,28 +84,27 @@ resource "aws_api_gateway_method_settings" "this" {
 module "python" {
   source         = "modules/python"
   log_level      = "${var.log_level}"
-  iam_groups     = "${var.iam_groups}"
   time_to_expire = "${var.time_to_expire}"
   module_name    = "${var.name}"
   bucket_name    = "${var.bucket_name}"
+//  iam_group      = "${var.iam_group}"
 }
 
-resource "local_file" "foo" {
-  content  = "${jsonencode(var.iam_groups)}"
-  filename = "${path.module}/iam_groups.json"
-}
+//resource "local_file" "foo" {
+//  content  = "${jsonencode(var.iam_users)}"
+//  filename = "${path.module}/iam_groups.json"
+//}
 
+//resource "aws_s3_bucket" "this" {
+//  bucket = "${var.bucket_name}"
+//  acl    = "private"
+//}
 
-resource "aws_s3_bucket" "this" {
-  bucket = "${var.bucket_name}"
-  acl    = "private"
-}
-
-
-resource "aws_s3_bucket_object" "this" {
-  bucket = "${aws_s3_bucket.this.bucket}"
-  key    = "args.json"
-  source = "${path.module}/iam_groups.json"
-}
+//resource "aws_s3_bucket_object" "this" {
+//  count = "${length(var.iam_groups)}"
+//  bucket = "${aws_s3_bucket.this.bucket}"
+//  key    = "${element(var.iam_groups, count.index)}"
+//  source = "${element(var.iam_groups, count.index)}"
+//}
 
 /**** check out "api_*.tf" ****/

@@ -2,29 +2,31 @@ provider "aws" {
   region = "us-west-2"
 }
 
+locals {
+  bucket_name = "example-dynamic-iam-groups-bucket",
+  iam_groups = ["test1.json", "test2.json"]
+}
+
+resource "aws_s3_bucket" "this" {
+  bucket = "${local.bucket_name}"
+  acl    = "private"
+}
+
+resource "aws_s3_bucket_object" "this" {
+  count = "${length(local.iam_groups)}"
+  bucket = "${aws_s3_bucket.this.bucket}"
+  key    = "${element(local.iam_groups, count.index)}"
+  source = "${element(local.iam_groups, count.index)}"
+}
+
+
 module "dynamic-iam-group" {
   source         = "../../"
   name           = "example-dynamic-iam-groups"
-  bucket_name    = "example-dynamic-iam-groups-bucket"
+  bucket_name    = "${local.bucket_name}"
   description    = "example usage of terraform-aws-authenticating-iam"
   time_to_expire = 300
   log_level = "DEBUG"
-  iam_groups     = [
-    {
-      "group_name" = "test1",
-      "user_names" = [
-        "phuonghqh1",
-        "phuonghqh2"
-      ]
-    },
-    {
-      "group_name" = "test2",
-      "user_names" = [
-        "phuonghqh1",
-        "phuonghqh2"
-      ]
-    }
-  ]
 }
 
 resource "aws_iam_policy" "this" {

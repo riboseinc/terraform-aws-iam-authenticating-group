@@ -1,11 +1,11 @@
 /* Clear expired Ip API */
 module "lamda_clear" {
-  source                = "modules/lambda"
-  name                  = "${local.clear_fn_name}"
-  description = "${var.description}"
-  handler               = "${module.python.clear_handler}"
-  role_arn              = "${module.sts_lambda.arn}"
-  source_code_path              = "${module.python.output_path}"
+  source           = "modules/lambda"
+  name             = "${local.clear_fn_name}"
+  description      = "${var.description}"
+  handler          = "${module.python.clear_handler}"
+  role_arn         = "${module.sts_lambda.arn}"
+  source_code_path = "${module.python.output_path}"
   source_code_hash = "${module.python.output_base64sha256}"
 }
 
@@ -15,7 +15,7 @@ resource "aws_cloudwatch_event_rule" "clear" {
   ]
 
   name                = "${local.clear_event_rule_name}"
-  description="${var.description}"
+  description         = "${var.description}"
   schedule_expression = "${local.clear_event_rate}"
 }
 

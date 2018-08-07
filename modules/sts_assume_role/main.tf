@@ -17,7 +17,7 @@ data "aws_iam_policy_document" "sts" {
 data "aws_iam_policy_document" "this" {
   statement {
     effect    = "Allow",
-    actions = "${var.actions}"
+    actions   = "${var.actions}"
     resources = [
       "*"
     ]
@@ -25,13 +25,13 @@ data "aws_iam_policy_document" "this" {
 }
 
 resource "aws_iam_role_policy" "this" {
-  name = "${var.name}"
-  role        = "${aws_iam_role.this.id}"
-  policy      = "${data.aws_iam_policy_document.this.json}"
+  name   = "${var.name}"
+  role   = "${aws_iam_role.this.id}"
+  policy = "${data.aws_iam_policy_document.this.json}"
 }
 
 resource "aws_iam_role" "this" {
-  name = "${var.name}"
+  name               = "${var.name}"
   description        = "${var.description}"
   assume_role_policy = "${data.aws_iam_policy_document.sts.json}"
 }

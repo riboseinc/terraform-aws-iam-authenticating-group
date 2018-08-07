@@ -1,11 +1,11 @@
 /* Authorize API */
 module "lamda_authorize" {
-  source                = "modules/lambda"
-  name                  = "${local.authorize_fn_name}"
-  description = "${var.description}"
-  handler               = "${module.python.authorize_handler}"
-  role_arn              = "${module.sts_lambda.arn}"
-  source_code_path              = "${module.python.output_path}"
+  source           = "modules/lambda"
+  name             = "${local.authorize_fn_name}"
+  description      = "${var.description}"
+  handler          = "${module.python.authorize_handler}"
+  role_arn         = "${module.sts_lambda.arn}"
+  source_code_path = "${module.python.output_path}"
   source_code_hash = "${module.python.output_base64sha256}"
 }
 
