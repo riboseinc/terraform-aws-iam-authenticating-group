@@ -95,16 +95,16 @@ module "python" {
 //  filename = "${path.module}/iam_groups.json"
 //}
 
-resource "aws_s3_bucket" "this" {
-  bucket = "${var.bucket_name}"
-  acl    = "private"
-}
+//resource "aws_s3_bucket" "this" {
+//  bucket = "${var.bucket_name}"
+//  acl    = "private"
+//}
 
-resource "aws_s3_bucket_object" "this" {
-  count = "${length(var.iam_groups)}"
-  bucket = "${aws_s3_bucket.this.bucket}"
-  key    = "${element(var.iam_groups, count.index)}"
-  source = "${element(var.iam_groups, count.index)}"
-}
+//resource "aws_s3_bucket_object" "this" {
+//  count = "${length(var.iam_groups)}"
+//  bucket = "${aws_s3_bucket.this.bucket}"
+//  key    = "${element(var.iam_groups, count.index)}"
+//  source = "${element(var.iam_groups, count.index)}"
+//}
 
 /**** check out "api_*.tf" ****/

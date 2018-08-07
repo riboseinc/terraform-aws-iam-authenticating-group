@@ -17,15 +17,6 @@ variable "deployment_stage" {
   description = "Api deployment stages, ex: staging, production..."
 }
 
-variable "iam_groups" {
-  type = "list"
-}
-
-//variable "iam_users_file" {
-//  type        = "string"
-//  description = "Where to add the rules to"
-//}
-
 variable "time_to_expire" {
   default     = 600
   description = "Time to expiry for every rule (in seconds)"
