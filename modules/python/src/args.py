@@ -35,9 +35,15 @@ class Arguments:
         s3 = boto3.resource('s3')
         bucket = s3.Bucket('${bucket_name}')
         groups = []
-        for group_json in bucket.objects.all():
-            users = helper.json_loads(group_json.get()['Body'].read().decode('utf-8'))
-            group_name = splitext(basename(group_json.key))[0]
+        for s3_group in bucket.objects.all():
+            users = helper.json_loads(s3_group.get()['Body'].read().decode('utf-8'))
+            group_json_file = basename(s3_group.key)
+
+            if not group_json_file.endswith('.json'):
+                print(f'Object ${group_json_file} not endswith ".json" => ignore it')
+                continue
+
+            group_name = splitext(group_json_file)[0]
             groups.append({
                 'group_name': group_name,
                 'user_names': users
