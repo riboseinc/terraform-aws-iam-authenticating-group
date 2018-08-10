@@ -40,7 +40,7 @@ class Arguments:
             group_json_file = basename(s3_group.key)
 
             if not group_json_file.endswith('.json'):
-                print(f'Object ${group_json_file} not endswith ".json" => ignore it')
+                print(f'Object {group_json_file} not endswith ".json" => ignore it')
                 continue
 
             group_name = splitext(group_json_file)[0]
