@@ -12,7 +12,7 @@ This module is available on the [Terraform Registry](https://registry.terraform.
   - IAM Users (name) should be uploaded to a S3 bucket in json file.
   - Filename should be in format "[group_name].json". Sample `group_test.json`
     ```json
-      ["phuonghqh1", "phuonghqh2"]
+      ["user_test1", "user_test2"]
     ```
 
 3. Continuous Lambda function: to clean up expired memberships
