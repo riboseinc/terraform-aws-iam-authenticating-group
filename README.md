@@ -6,11 +6,16 @@ This module is available on the [Terraform Registry](https://registry.terraform.
 
 ### Components
 
-    1. API Gateway that performs authorization.
+1. API Gateway that performs authorization.
 
-    2. On-demand Lambda function (linked to API Gateway method `POST|DELETE /membership`): to add/remove IAM group memberships on-demand
+2. On-demand Lambda function (linked to API Gateway method `POST|DELETE /membership`): to add/remove IAM group memberships on-demand
+  - IAM Users (name) should be uploaded to a S3 bucket in json file.
+  - Filename should be in format "[group_name].json". Sample `group_test.json`
+    ```json
+      ["phuonghqh1", "phuonghqh2"]
+    ```
 
-    3. Continuous Lambda function: to clean up expired memberships
+3. Continuous Lambda function: to clean up expired memberships
 
 
 ### On-demand Lambda Function: Adding/Removing IAM Group Membership
@@ -66,73 +71,43 @@ Steps:
 
 ### Sample Usage
 
-Check out [examples](https://github.com/riboseinc/terraform-aws-iam-authenticating-group/tree/master/examples) for more details
-
-
-#### Provider Config
-  
-  - Arguments will be exposed to S3 Bucket with name `${bucket_name}/args.json`. User can update it with new values. 
-  
-  - Where should this API deployed to, more info [aws](https://www.terraform.io/docs/providers/aws)
+Click to see complete [example](examples/inline) config
 
 ```hcl-terraform
+
 provider "aws" {
-  region  = "us-west-2"
+  region = "us-west-2"
 }
-```
+
+locals {
+  bucket_name = "example-dynamic-iam-groups-bucket",
+  iam_groups = ["group_test1.json", "group_test2.json"] // [group_name].json
+}
+
+resource "aws_s3_bucket" "this" {
+  bucket = "${local.bucket_name}"
+  acl    = "private"
+}
+
+/* S3 files upload */
+resource "aws_s3_bucket_object" "this" {
+  count = "${length(local.iam_groups)}"
+  bucket = "${aws_s3_bucket.this.bucket}"
+  key    = "${element(local.iam_groups, count.index)}"
+  source = "${element(local.iam_groups, count.index)}"
+}
 
 
-#### Inline Config
-
-```hcl-terraform
+/* module config */
 module "dynamic-iamgroup" {
-  source = "riboseinc/iam-authenticating-group/aws"
-
-  name           = "example-dynamic-iam-groups"
-  bucket_name    = "example-dynamic-iam-groups-bucket"
-  description    = "example usage of terraform-aws-authenticating-iam"
-  
-  # in seconds
-  time_to_expire = 300
-  
-  # CloudWatch log level "INFO" or "DEBUG", default is "INFO"
-  log_level = "INFO" 
-  
-  iam_groups     = [
-    {
-      "group_name" = "group_name_1",
-      "user_names" = [
-        "user_name_1",
-        "user_name_2"
-      ]
-    },
-    {
-      "group_name" = "group_name_2",
-      "user_names" = [
-        "user_name_1",
-        "user_name_2"
-      ]
-    }
-  ]
-}
-```
-
-#### JSON file Config
-```hcl-terraform
-module "dynamic-iam-group" {
   source         = "../../"
   name           = "example-dynamic-iam-groups"
-  bucket_name    = "example-dynamic-iam-groups-bucket"
+  bucket_name    = "${local.bucket_name}"
   description    = "example usage of terraform-aws-authenticating-iam"
   time_to_expire = 300
-  log_level = "INFO"
-  iam_groups     = ["${file("iam_groups.json")}"]
+  log_level = "DEBUG"
 }
-```
 
-#### Policy Config
-
-```hcl-terraform
 resource "aws_iam_policy" "this" {
   description = "Policy Developer IAM Access"
   policy      = "${data.aws_iam_policy_document.access_policy_doc.json}"
@@ -148,11 +123,8 @@ data "aws_iam_policy_document" "access_policy_doc" {
       "${module.dynamic-iamgroup.execution_resources}"]
   }
 }
-```
 
-
-#### Some outputs
-```hcl-terraform
+/* outputs */
 output "dynamic-iamgroup-api-invoke-url" {
   value = "${module.dynamic-iamgroup.invoke_url}"
 }
