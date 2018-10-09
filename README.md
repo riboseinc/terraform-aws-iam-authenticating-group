@@ -143,5 +143,5 @@ Some works around:
 
 ### Bash to execute the API
 
-Check out [aws-authenticating-secgroup-scripts](https://github.com/riboseinc/aws-iam-authenticating-group-scripts)
+Check out [aws-authenticating-secgroup-scripts](https://github.com/riboseinc/aws-authenticating-secgroup-scripts)
 
